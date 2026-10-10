@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qmax & Salik Software ®</title>
+<meta name="description" content="مركز تحميل ملفات Qmax وSalik: سوفتوير، فلاشة، لودر وملفات قنوات.">
+<style>
+:root{color-scheme:dark;--bg:#050914;--panel:#0c1628;--panel2:#101f37;--blue:#2f91ff;--cyan:#7ac5ff;--text:#eef6ff;--muted:#a8bbd3;--line:#203a5d}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10294b 0,#050914 52%);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;min-height:100vh}header{padding:28px 16px 22px;text-align:center;border-bottom:1px solid var(--line);background:#050914bb}header h1{margin:0;font-size:clamp(25px,5vw,40px)}header h1 span{color:var(--cyan)}header p{color:var(--muted);margin:9px 0 0}.wrap{width:min(1120px,100% - 28px);margin:24px auto}.search{width:100%;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:13px;color:white;font-size:16px;outline:none}.search:focus{border-color:var(--blue)}.sections{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.tab{padding:13px 8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--text);font-weight:700;cursor:pointer}.tab.active,.subtab.active{background:#123764;border-color:var(--blue);color:#fff}.subtabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.subtab{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer}.status{color:var(--muted);font-size:14px;margin:14px 2px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:linear-gradient(150deg,#10203a,#091222);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}.card img{width:100%;height:160px;object-fit:cover;background:#101c30}.card .body{padding:15px;display:flex;flex-direction:column;gap:9px;flex:1}.tag{color:var(--cyan);font-size:12px;font-weight:700}.card h3{margin:0;font-size:19px;overflow-wrap:anywhere}.card p{margin:0;color:var(--muted);line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.download{margin-top:auto;display:block;text-align:center;text-decoration:none;background:linear-gradient(90deg,#1675db,#2f9cff);padding:11px;border-radius:10px;color:#fff;font-weight:800}.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 10px;background:#0c1628aa;border:1px dashed var(--line);border-radius:14px}footer{text-align:center;margin-top:50px;padding:24px 14px;border-top:1px solid var(--line);background:#040812;color:var(--muted);line-height:1.9}footer strong{display:block;color:#8fc8ff;font-size:25px;letter-spacing:5px;margin-top:10px}footer .brand{color:white;font-weight:800}@media(max-width:800px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:540px){.sections{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:1fr}.card img{height:190px}.wrap{width:calc(100% - 22px)}}
+</style>
+</head>
+<body>
+<header><h1><span>Qmax &amp; Salik</span> Software <span>®</span></h1><p>مركز تحميل السوفتوير والفلاشة واللودر وملفات القنوات</p></header>
+<main class="wrap">
+<input id="search" class="search" type="search" placeholder="ابحث باسم الملف أو الموديل..." aria-label="بحث">
+<nav class="sections" id="sections" aria-label="الأقسام الرئيسية">
+<button class="tab active" data-category="all">الكل</button><button class="tab" data-category="software">💻 السوفتوير</button><button class="tab" data-category="flash">⚡ الفلاشة</button><button class="tab" data-category="loader">🛠️ اللودر</button><button class="tab" data-category="channels">📺 ملفات القنوات</button>
+</nav>
+<div id="subtabs" class="subtabs" hidden></div>
+<div id="status" class="status">جاري تحميل الملفات...</div><section id="cards" class="cards" aria-live="polite"></section>
+</main>
+<footer><div class="brand">Qmax &amp; Salik Software ®</div><div>جميع الحقوق محفوظة — جمهورية كيوماكس ®</div><strong>MQX</strong></footer>
+<script>
+// Paste your Supabase Project URL and Publishable key below.
+const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_PROJECT_URL_HERE';
+const SUPABASE_KEY = 'PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE';
+const labels={software:'السوفتوير',flash:'الفلاشة',loader:'اللودر',channels:'ملفات القنوات'};
+const subs={software:[['old','الشكل القديم'],['new','الشكل الجديد']],channels:[['DB','DB'],['SDX','SDX'],['Chmax','Chmax']]};
+let models=[],category='all',subcategory='';
+const cards=document.getElementById('cards'),status=document.getElementById('status'),search=document.getElementById('search'),subtabs=document.getElementById('subtabs');
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function subLabel(c,s){return ((subs[c]||[]).find(x=>x[0]===s)||[])[1]||s||labels[c]||''}
+function render(){const q=search.value.trim().toLowerCase();const filtered=models.filter(m=>(category==='all'||m.category===category)&&(!subcategory||m.subcategory===subcategory)&&(!q||[m.name,m.model,m.description,m.category,m.subcategory].join(' ').toLowerCase().includes(q)));status.textContent=`عدد الملفات: ${filtered.length}`;cards.innerHTML=filtered.length?filtered.map(m=>`<article class="card">${m.image_url?`<img loading="lazy" src="${esc(m.image_url)}" alt="${esc(m.name)}" onerror="this.style.display='none'">`:''}<div class="body"><span class="tag">${esc(labels[m.category]||m.category)}${m.subcategory?' · '+esc(subLabel(m.category,m.subcategory)):''}</span><h3>${esc(m.name)}</h3>${m.model?`<div>الموديل: ${esc(m.model)}</div>`:''}${m.description?`<p>${esc(m.description)}</p>`:''}<a class="download" href="${esc(m.download_url)}" target="_blank" rel="noopener noreferrer">⬇️ تحميل الملف</a></div></article>`).join(''):'<div class="empty">لا توجد ملفات مطابقة حاليًا.</div>'}
+function renderSubs(){const list=subs[category]||[];subtabs.hidden=!list.length;subcategory='';subtabs.innerHTML=list.map(([v,l])=>`<button class="subtab${v===subcategory?' active':''}" data-sub="${esc(v)}">${esc(l)}</button>`).join('');}
+document.getElementById('sections').addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));renderSubs();render()});subtabs.addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;subcategory=b.dataset.sub;subtabs.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));render()});search.addEventListener('input',render);
+async function load(){if(SUPABASE_URL.startsWith('PASTE_')||SUPABASE_KEY.startsWith('PASTE_')){status.textContent='الموقع جاهز للتجهيز: أضف رابط مشروع Supabase والمفتاح العام في ملف index.html.';cards.innerHTML='<div class="empty">تم تجهيز الموقع. أكمل إعداد Supabase ثم أضف الملفات من لوحة المدير.</div>';return}try{const r=await fetch(`${SUPABASE_URL}/rest/v1/models?select=*&published=eq.true&order=created_at.desc`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});if(!r.ok)throw Error('HTTP '+r.status);models=await r.json();render()}catch(e){status.textContent='تعذّر تحميل الملفات. راجع إعدادات Supabase والاتصال.';cards.innerHTML='<div class="empty">لم نتمكن من الاتصال بقاعدة البيانات. تأكد من رابط المشروع والمفتاح العام وسياسات القراءة.</div>'}}
+load();
+</script>
+</body></html>
